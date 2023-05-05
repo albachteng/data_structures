@@ -5,7 +5,7 @@ T = TypeVar("T")
 
 class Heap(Generic[T]):
     heap: List[T] = []
-    _lt: Callable[[T, T], bool] = lambda x, y: False
+    _lt: Callable[[T, T], bool]
 
     def __init__(self, val: List[T], fn: Callable[[T, T], bool]) -> None:
         if val is not None:
@@ -95,19 +95,17 @@ def heap_sort(arr: List[T], fn: Callable[[T, T], bool]) -> List:
 test_arr = [4, 5, 3, 1, 2, 7, 6]
 
 
-class K(TypedDict):
-    name: str
-    count: int
-
+K = TypedDict("K", {"name": str, "count": int})
 
 test_arr_2: List[K] = [
-    {"name": "x", "count": 1},
-    {"name": "x", "count": 4},
-    {"name": "x", "count": 5},
-    {"name": "x", "count": 3},
-    {"name": "x", "count": 2},
+    {"name": "a", "count": 1},
+    {"name": "b", "count": 4},
+    {"name": "c", "count": 5},
+    {"name": "d", "count": 3},
+    {"name": "e", "count": 2},
 ]
-print(heap_sort(test_arr_2, lambda x, y: x["count"] < y["count"]))
+# print(heap_sort(test_arr_2, lambda x, y: x["count"] < y["count"]))
+print(heap_sort(test_arr_2, lambda x, y: x["name"] < y["name"]))
 # test = Heap(test_arr, lambda x, y: x < y)
 # print(test.get_min())
 # test.update(3, 10)
