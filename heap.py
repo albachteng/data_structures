@@ -1,15 +1,21 @@
-from typing import Generic, List, TypeVar
+from typing import Callable, Dict, Generic, List, TypedDict, TypeVar
 
 T = TypeVar("T")
 
 
 class Heap(Generic[T]):
     heap: List[T] = []
+    _lt: Callable[[T, T], bool] = lambda x, y: False
 
-    def __init__(self, *val: T) -> None:
+    def __init__(self, val: List[T], fn: Callable[[T, T], bool]) -> None:
         if val is not None:
-            self.heap = [*val]
+            self.heap = val
+            self._lt = fn
             self.build()
+
+    def set_lt(self, fn: Callable[[T, T], bool]) -> None:
+        self._lt = fn
+        self._gt = lambda x, y: not self._lt(x, y)
 
     def insert(self, val) -> None:
         self.heap.append(val)
@@ -40,12 +46,15 @@ class Heap(Generic[T]):
     def _heap_down(self, i) -> None:
         left = 2 * i + 1
         right = 2 * i + 2
-        while (left < len(self.heap) and self.heap[i] > self.heap[left]) or (
-            right < len(self.heap) and self.heap[i] > self.heap[right]
-        ):
+        while (
+            left < len(self.heap) and not self._lt(self.heap[i], self.heap[left])
+        ) or (right < len(self.heap) and not self._lt(self.heap[i], self.heap[right])):
             smallest = (
                 left
-                if (right >= len(self.heap) or self.heap[left] < self.heap[right])
+                if (
+                    right >= len(self.heap)
+                    or self._lt(self.heap[left], self.heap[right])
+                )
                 else right
             )
             swap(self.heap, smallest, i)
@@ -75,17 +84,31 @@ def swap(arr: List, i: int, j: int) -> None:
     arr[i], arr[j] = arr[j], arr[i]
 
 
-def heap_sort(arr: List) -> List:
+def heap_sort(arr: List[T], fn: Callable[[T, T], bool]) -> List:
     out = []
-    h = Heap(*arr)
+    h = Heap(arr, fn)
     while len(h.heap):
         out.append(h.extract_min())
     return out
 
 
 test_arr = [4, 5, 3, 1, 2, 7, 6]
-print(heap_sort(test_arr))
-# test = Heap(*test_arr)
+
+
+class K(TypedDict):
+    name: str
+    count: int
+
+
+test_arr_2: List[K] = [
+    {"name": "x", "count": 1},
+    {"name": "x", "count": 4},
+    {"name": "x", "count": 5},
+    {"name": "x", "count": 3},
+    {"name": "x", "count": 2},
+]
+print(heap_sort(test_arr_2, lambda x, y: x["count"] < y["count"]))
+# test = Heap(test_arr, lambda x, y: x < y)
 # print(test.get_min())
 # test.update(3, 10)
 # print(test.heap)
