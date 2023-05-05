@@ -13,6 +13,9 @@ class Heap(Generic[T]):
             self._lt = fn
             self.build()
 
+    def swap(self, i: int, j: int) -> None:
+        self.heap[i], self.heap[j] = self.heap[j], self.heap[i]
+
     def set_lt(self, fn: Callable[[T, T], bool]) -> None:
         self._lt = fn
         self._gt = lambda x, y: not self._lt(x, y)
@@ -31,7 +34,7 @@ class Heap(Generic[T]):
         if len(self.heap) == 0:
             return None
         min = self.heap[0]
-        swap(self.heap, 0, -1)
+        self.swap(0, -1)
         self.heap.pop()
         self._heap_down(0)
         return min
@@ -39,7 +42,7 @@ class Heap(Generic[T]):
     def _heap_up(self, i) -> None:
         parent = (i - 1) // 2
         while i != 0 and self.heap[i] < self.heap[parent]:
-            swap(self.heap, i, parent)
+            self.swap(i, parent)
             i = parent
             parent = (i - 1) // 2
 
@@ -57,7 +60,7 @@ class Heap(Generic[T]):
                 )
                 else right
             )
-            swap(self.heap, smallest, i)
+            self.swap(smallest, i)
             i = smallest
             left = 2 * i + 1
             right = 2 * i + 2
@@ -80,16 +83,35 @@ class Heap(Generic[T]):
             self._heap_down(i)
 
 
-def swap(arr: List, i: int, j: int) -> None:
-    arr[i], arr[j] = arr[j], arr[i]
-
-
 def heap_sort(arr: List[T], fn: Callable[[T, T], bool]) -> List:
     out = []
     h = Heap(arr, fn)
     while len(h.heap):
         out.append(h.extract_min())
     return out
+
+
+class PriorityQueue:
+    def __init__(self, val, fn):
+        self.queue = Heap(val, fn)
+
+    def enqueue(self, val):
+        self.queue.insert(val)
+
+    def dequeue(self):
+        return self.queue.extract_min()
+
+    def peek(self):
+        return self.queue.get_min()
+
+    def change_priority_by_index(self, i, new):
+        self.queue.update_by_index(i, new)
+
+    def change_priority(self, old, new):
+        self.queue.update(old, new)
+
+    def is_empty(self):
+        return len(self.queue.heap) == 0
 
 
 test_arr = [4, 5, 3, 1, 2, 7, 6]
