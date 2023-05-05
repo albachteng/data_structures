@@ -6,8 +6,8 @@ def knapsack(items, k, i=0, lookup=None):
     lookup = {} if lookup is None else lookup
     if (i, k) in lookup:
         return lookup[(i, k)]
-    # end of items, return 0
-    if i == len(items):
+    # send of items, return 0
+    elif i == len(items):
         return 0
     # overshot, do not choose
     elif k < 0:

@@ -23,7 +23,7 @@ class AdjacencyMatrix:
             self.blue.union((i, size - 1), self.right_island)
 
     def play(self, i, j, player):
-        # assert 0 <= i < self.size and 0 <= i < self.size and self.board[i][j] == 0
+        assert 0 <= i < self.size and 0 <= i < self.size and self.board[i][j] == 0
         code = 1 if player == "red" else 2
         self.board[i][j] = code
         for nei_i, nei_j in [
